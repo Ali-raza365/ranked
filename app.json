@@ -1,0 +1,72 @@
+{
+  "expo": {
+    "name": "Ranked",
+    "slug": "ranked-app",
+    "version": "1.2.2",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.harryli.ranked",
+      "buildNumber": "22",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app does not need camera access",
+        "NSPhotoLibraryUsageDescription": "This app does not need photo library access",
+        "NSMicrophoneUsageDescription": "This app does not need microphone access",
+        "NSLocationWhenInUseUsageDescription": "This app does not need location access",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.harryli.ranked"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          },
+          "android": {
+            "extraProguardRules": "-keep class com.google.android.gms.internal.consent_sdk.** { *; }"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff"
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3647461067575621~7405140890",
+          "iosAppId": "ca-app-pub-3647461067575621~5764756166"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "04b17c85-6f90-43ac-866c-96b087cdf940"
+      }
+    },
+    "entryPoint": "./index.js",
+    "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*", "assets/sounds/*"]
+  }
+}

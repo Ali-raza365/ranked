@@ -1,0 +1,39 @@
+{
+  "cli": {
+    "version": ">= 5.9.1"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "preview2": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview3": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "production": {
+      "ios": {
+        "resourceClass": "m-medium",
+        "cache": {
+          "disabled": true
+        }
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6739509137"
+      }
+    }
+  }
+}

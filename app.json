@@ -62,7 +62,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "04b17c85-6f90-43ac-866c-96b087cdf940"
+        "projectId": "5469c1a0-876f-4565-bea3-1ef5cdd3caf4"
       }
     },
     "entryPoint": "./index.js",

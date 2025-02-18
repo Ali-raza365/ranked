@@ -519,6 +519,7 @@ const TabNavigator = () => {
 
   return (
     <>
+    <AdBanner/>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
@@ -580,7 +581,6 @@ const TabNavigator = () => {
       />
       <Tab.Screen name="Profile" component={ProfileStackScreen} />
     </Tab.Navigator>
-    <AdBanner/>
     </>
   );
 };

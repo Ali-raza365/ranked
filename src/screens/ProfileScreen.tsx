@@ -106,9 +106,9 @@ const ProfileScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       {ProfileComponent}
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -129,14 +129,14 @@ const OtherUserProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <FlatList
         data={[]}
         renderItem={null}
         ListHeaderComponent={renderHeader}
         contentContainerStyle={styles.flatListContent}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

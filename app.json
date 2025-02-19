@@ -55,14 +55,13 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-3647461067575621~7405140890",
-          "iosAppId": "ca-app-pub-3647461067575621~5764756166"
+          "iosAppId": "ca-app-pub-5557702327687518~7392527016"
         }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "5469c1a0-876f-4565-bea3-1ef5cdd3caf4"
+         "projectId": "04b17c85-6f90-43ac-866c-96b087cdf940"
       }
     },
     "entryPoint": "./index.js",

@@ -16,7 +16,7 @@ const CreateRankButton: React.FC<CreateRankButtonProps> = ({ onPress }) => (
 const styles = StyleSheet.create({
   createRankButton: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 20,
     right: 15,
     backgroundColor: theme.colors.primary,
     width: 60,

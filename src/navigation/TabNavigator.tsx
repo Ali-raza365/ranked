@@ -1,44 +1,62 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
-import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../screens/HomeScreen';
-import UserSearchScreen from '../screens/UserSearchScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import OtherUserProfileScreen from '../screens/OtherUserProfileScreen';
-import CreateRanking from '../screens/CreateRanking';
-import RankingDetailScreen from '../screens/RankingDetailScreen';
-import EditRanking from '../screens/EditRanking';
-import { theme } from '../styles/theme';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import { SerializableRanking } from '../types/ranking';
-import RerankScreen from '../screens/RerankScreen';
-import { Ranking } from '../types/ranking';
-import { Image, TouchableOpacity, Text, View, Platform, Modal } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import InviteScreen from '../screens/InviteScreen';
-import Confetti from 'react-native-confetti';
-import { useCurrentUser } from '../hooks/useCurrentUser';
-import { getDoc, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
-import NotificationsScreen from '../screens/NotificationsScreen';
-import { MaterialIcons } from '@expo/vector-icons';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { requestNotificationPermissions } from '../utils/notificationPermissions';
-import * as Notifications from 'expo-notifications';
-import FollowListScreen from '../screens/FollowListScreen';
-import AdBanner from '../components/AdBanner';
+import React, { useRef, useEffect, useState } from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  createStackNavigator,
+  StackNavigationOptions,
+} from "@react-navigation/stack";
+import { Ionicons } from "@expo/vector-icons";
+import HomeScreen from "../screens/HomeScreen";
+import UserSearchScreen from "../screens/UserSearchScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import OtherUserProfileScreen from "../screens/OtherUserProfileScreen";
+import CreateRanking from "../screens/CreateRanking";
+import RankingDetailScreen from "../screens/RankingDetailScreen";
+import EditRanking from "../screens/EditRanking";
+import { theme } from "../styles/theme";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
+import { SerializableRanking } from "../types/ranking";
+import RerankScreen from "../screens/RerankScreen";
+import { Ranking } from "../types/ranking";
+import {
+  Image,
+  TouchableOpacity,
+  Text,
+  View,
+  Platform,
+  Modal,
+  SafeAreaView,
+} from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import InviteScreen from "../screens/InviteScreen";
+import Confetti from "react-native-confetti";
+import { useCurrentUser } from "../hooks/useCurrentUser";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import NotificationsScreen from "../screens/NotificationsScreen";
+import { MaterialIcons } from "@expo/vector-icons";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { requestNotificationPermissions } from "../utils/notificationPermissions";
+import * as Notifications from "expo-notifications";
+import FollowListScreen from "../screens/FollowListScreen";
+import AdBanner from "../components/AdBanner";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Define the param list for the SearchStack
 type SearchStackParamList = {
   SearchScreen: undefined;
   OtherUserProfile: { userId: string };
-  FollowList: { userId: string; type: 'followers' | 'following' };
+  FollowList: { userId: string; type: "followers" | "following" };
 };
 
-type OtherUserProfileScreenNavigationProp = StackNavigationProp<SearchStackParamList, 'OtherUserProfile'>;
-type OtherUserProfileScreenRouteProp = RouteProp<SearchStackParamList, 'OtherUserProfile'>;
+type OtherUserProfileScreenNavigationProp = StackNavigationProp<
+  SearchStackParamList,
+  "OtherUserProfile"
+>;
+type OtherUserProfileScreenRouteProp = RouteProp<
+  SearchStackParamList,
+  "OtherUserProfile"
+>;
 
 type OtherUserProfileScreenProps = {
   navigation: OtherUserProfileScreenNavigationProp;
@@ -53,12 +71,12 @@ type HomeStackParamList = {
   Rerank: { originalRanking: SerializableRanking };
   Invite: undefined;
   OtherUserProfile: { userId: string };
-  FollowList: { userId: string; type: 'followers' | 'following' };
+  FollowList: { userId: string; type: "followers" | "following" };
 };
 
 type ProfileStackParamList = {
   ProfileScreen: undefined;
-  FollowList: { userId: string; type: 'followers' | 'following' };
+  FollowList: { userId: string; type: "followers" | "following" };
   OtherUserProfile: { userId: string };
 };
 
@@ -71,19 +89,20 @@ const NotificationsStack = createStackNavigator();
 const screenOptions: StackNavigationOptions = {
   headerStyle: {
     backgroundColor: theme.colors.surface,
-    shadowColor: 'transparent',
+    shadowColor: "transparent",
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.surface === '#FFFFFF' ? '#E5E5E5' : '#333333',
+    borderBottomColor:
+      theme.colors.surface === "#FFFFFF" ? "#E5E5E5" : "#333333",
   },
   headerTintColor: theme.colors.text,
   headerTitleStyle: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 16,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
   },
   headerBackTitleStyle: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-  }
+    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+  },
 };
 
 const SEQUENTIAL_MESSAGES = [
@@ -93,7 +112,7 @@ const SEQUENTIAL_MESSAGES = [
   "wow! you're still pressing! good for you!",
   "ok man you're kinda wearing this button out, there's a whole app to explore",
   "you should really check out the rest of the app, harry worked really hard on it, its pretty neat",
-  "alright whatever dont listen to me, im just a button. who cares what a button thinks"
+  "alright whatever dont listen to me, im just a button. who cares what a button thinks",
 ];
 
 const secrets = [
@@ -136,7 +155,7 @@ const secrets = [
   "did you know this app was made by a 13 year old that the creator of the app locked in his basement? he gets 10 minutes of fortnite for every 1000 lines of code written",
   "this button is outsourced to China, there's 20 chinese dudes actively monitoring when you click me and typing these messages up",
   "secret button fact #12: this button is using an LLM, each time you press it it costs us like 0.001 cents.",
-  "secret button fact #13: many hours were spent creating this secret button and no one will see this message.", 
+  "secret button fact #13: many hours were spent creating this secret button and no one will see this message.",
   "secret button fact #15: i was almost named greg instead of secret button.",
   "hehehee stooooooppp clicking me that tickles stoppppp hehehehehe",
   "secret button fact #16: if you click me 1000 times, something crazy happens",
@@ -152,14 +171,14 @@ const HomeStackScreen = () => {
   const { user } = useCurrentUser();
   const confettiRef = useRef<any>(null);
   const [showMessage, setShowMessage] = useState(false);
-  const [currentMessage, setCurrentMessage] = useState('');
+  const [currentMessage, setCurrentMessage] = useState("");
   const [messageIndex, setMessageIndex] = useState<number | null>(null);
 
   // Load the message index when component mounts
   useEffect(() => {
     const fetchMessageIndex = async () => {
       if (user?.uid) {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userDoc = await getDoc(doc(db, "users", user.uid));
         const currentIndex = userDoc.data()?.secretButtonIndex ?? 0;
         setMessageIndex(currentIndex);
       }
@@ -180,26 +199,26 @@ const HomeStackScreen = () => {
     if (messageIndex < SEQUENTIAL_MESSAGES.length) {
       // Get the current sequential message
       message = SEQUENTIAL_MESSAGES[messageIndex];
-      
+
       // Update the index in Firebase
-      await updateDoc(doc(db, 'users', user.uid), {
-        secretButtonIndex: messageIndex + 1
+      await updateDoc(doc(db, "users", user.uid), {
+        secretButtonIndex: messageIndex + 1,
       });
-      
+
       // Update local state
       setMessageIndex(messageIndex + 1);
     } else {
       // Use random message from secrets array
       message = secrets[Math.floor(Math.random() * secrets.length)];
     }
-    
+
     setCurrentMessage(message);
     setShowMessage(true);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <HomeStack.Navigator 
+      <HomeStack.Navigator
         screenOptions={{
           ...screenOptions,
           headerStyle: {
@@ -208,46 +227,50 @@ const HomeStackScreen = () => {
           },
           headerTitleContainerStyle: {
             paddingBottom: 12,
-          }
+          },
         }}
       >
-        <HomeStack.Screen 
-          name="HomeScreen" 
-          component={HomeScreen} 
+        <HomeStack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
           options={({ navigation }) => ({
-            title: 'Home',
+            title: "Home",
             headerRight: () => (
-              <TouchableOpacity 
-                onPress={() => navigation.navigate('Invite')}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Invite")}
                 style={{
                   marginRight: 16,
                   marginBottom: 8,
                   paddingHorizontal: 8,
                   paddingVertical: 6,
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: "#f5f5f5",
                   borderRadius: 0,
                   borderWidth: 1,
-                  borderColor: '#000',
-                  position: 'relative',
+                  borderColor: "#000",
+                  position: "relative",
                 }}
               >
                 {(!user?.shareCount || user.shareCount < 3) && (
-                  <View style={{
-                    position: 'absolute',
-                    top: -4,
-                    right: -4,
-                    width: 8,
-                    height: 8,
-                    backgroundColor: '#ff0000',
-                    borderWidth: 1,
-                    borderColor: '#000',
-                  }} />
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -4,
+                      right: -4,
+                      width: 8,
+                      height: 8,
+                      backgroundColor: "#ff0000",
+                      borderWidth: 1,
+                      borderColor: "#000",
+                    }}
+                  />
                 )}
-                <Text style={{
-                  fontSize: 11,
-                  fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-                  fontWeight: 'bold',
-                }}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+                    fontWeight: "bold",
+                  }}
+                >
                   [INVITE]
                 </Text>
               </TouchableOpacity>
@@ -255,7 +278,7 @@ const HomeStackScreen = () => {
             headerLeft: () => {
               if (user?.shareCount && user.shareCount >= 3) {
                 return (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => {
                       showAffirmation();
                     }}
@@ -264,53 +287,69 @@ const HomeStackScreen = () => {
                       marginBottom: 8,
                       paddingHorizontal: 8,
                       paddingVertical: 6,
-                      backgroundColor: '#f5f5f5',
+                      backgroundColor: "#f5f5f5",
                       borderRadius: 0,
                       borderWidth: 1,
-                      borderColor: '#000',
+                      borderColor: "#000",
                     }}
                   >
-                    <Text style={{
-                      fontSize: 11,
-                      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-                      fontWeight: 'bold',
-                    }}>
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        fontFamily:
+                          Platform.OS === "ios" ? "Menlo" : "monospace",
+                        fontWeight: "bold",
+                      }}
+                    >
                       [SHH...]
                     </Text>
                   </TouchableOpacity>
                 );
               }
               return null;
-            }
+            },
           })}
         />
-        <HomeStack.Screen name="CreateRanking" component={CreateRanking} options={{ title: 'Create a Ranking' }} />
-        <HomeStack.Screen name="EditRanking" component={EditRanking} options={{ title: 'Edit Ranking' }} />
-        <HomeStack.Screen name="RankingDetail" component={RankingDetailScreen} options={{ title: 'Rank' }} />
-        <HomeStack.Screen 
-          name="Rerank" 
-          component={RerankScreen as React.ComponentType<any>} 
-          options={{ title: 'Rerank' }} 
+        <HomeStack.Screen
+          name="CreateRanking"
+          component={CreateRanking}
+          options={{ title: "Create a Ranking" }}
         />
-        <HomeStack.Screen 
-          name="Invite" 
-          component={InviteScreen} 
-          options={{ 
-            title: 'Invite Friends',
-            presentation: 'modal' 
-          }} 
+        <HomeStack.Screen
+          name="EditRanking"
+          component={EditRanking}
+          options={{ title: "Edit Ranking" }}
         />
-        <HomeStack.Screen 
-          name="OtherUserProfile" 
+        <HomeStack.Screen
+          name="RankingDetail"
+          component={RankingDetailScreen}
+          options={{ title: "Rank" }}
+        />
+        <HomeStack.Screen
+          name="Rerank"
+          component={RerankScreen as React.ComponentType<any>}
+          options={{ title: "Rerank" }}
+        />
+        <HomeStack.Screen
+          name="Invite"
+          component={InviteScreen}
+          options={{
+            title: "Invite Friends",
+            presentation: "modal",
+          }}
+        />
+        <HomeStack.Screen
+          name="OtherUserProfile"
           component={OtherUserProfileScreen}
-          options={{ title: 'User Profile' }} 
+          options={{ title: "User Profile" }}
         />
-        <HomeStack.Screen 
-          name="FollowList" 
+        <HomeStack.Screen
+          name="FollowList"
           component={FollowListScreen}
-          options={({ route }) => ({ 
-            title: route.params.type === 'followers' ? 'Followers' : 'Following',
-            headerShown: true
+          options={({ route }) => ({
+            title:
+              route.params.type === "followers" ? "Followers" : "Following",
+            headerShown: true,
           })}
         />
       </HomeStack.Navigator>
@@ -321,35 +360,35 @@ const HomeStackScreen = () => {
         visible={showMessage}
         onRequestClose={() => setShowMessage(false)}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           style={{
             flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            justifyContent: 'center',
-            alignItems: 'center',
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
             padding: 20,
           }}
           activeOpacity={1}
           onPress={() => setShowMessage(false)}
         >
-          <View 
+          <View
             style={{
-              backgroundColor: '#f5f5f5',
+              backgroundColor: "#f5f5f5",
               padding: 20,
               borderRadius: 4,
               borderWidth: 1,
-              borderColor: '#000',
-              width: '90%',
+              borderColor: "#000",
+              width: "90%",
               maxWidth: 400,
             }}
           >
-            <Text 
+            <Text
               style={{
-                fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-                fontWeight: 'bold',
+                fontFamily: Platform.OS === "ios" ? "Courier" : "monospace",
+                fontWeight: "bold",
                 fontSize: 14,
                 lineHeight: 20,
-                color: '#000',
+                color: "#000",
               }}
             >
               {currentMessage}
@@ -358,9 +397,9 @@ const HomeStackScreen = () => {
         </TouchableOpacity>
       </Modal>
 
-      <View 
+      <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
           right: 0,
@@ -369,12 +408,12 @@ const HomeStackScreen = () => {
         }}
         pointerEvents="none"
       >
-        <Confetti 
+        <Confetti
           ref={(ref) => {
             confettiRef.current = ref;
           }}
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
@@ -388,18 +427,22 @@ const HomeStackScreen = () => {
 
 const SearchStackScreen = () => (
   <SearchStack.Navigator screenOptions={screenOptions}>
-    <SearchStack.Screen name="SearchScreen" component={UserSearchScreen} options={{ title: 'Search' }} />
-    <SearchStack.Screen 
-      name="OtherUserProfile" 
-      component={OtherUserProfileScreen}
-      options={{ title: 'User Profile' }} 
+    <SearchStack.Screen
+      name="SearchScreen"
+      component={UserSearchScreen}
+      options={{ title: "Search" }}
     />
-    <SearchStack.Screen 
-      name="FollowList" 
+    <SearchStack.Screen
+      name="OtherUserProfile"
+      component={OtherUserProfileScreen}
+      options={{ title: "User Profile" }}
+    />
+    <SearchStack.Screen
+      name="FollowList"
       component={FollowListScreen}
-      options={({ route }) => ({ 
-        title: route.params.type === 'followers' ? 'Followers' : 'Following'
-      })} 
+      options={({ route }) => ({
+        title: route.params.type === "followers" ? "Followers" : "Following",
+      })}
     />
   </SearchStack.Navigator>
 );
@@ -413,35 +456,35 @@ const ProfileStackScreen = () => (
       },
       headerTitleStyle: {
         fontFamily: theme.fonts.default,
-      }
+      },
     }}
   >
-    <ProfileStack.Screen 
-      name="ProfileScreen" 
+    <ProfileStack.Screen
+      name="ProfileScreen"
       component={ProfileScreen}
       options={({ navigation, route }) => ({
         headerShown: true,
-        headerTitle: '',
+        headerTitle: "",
         headerTitleStyle: {
           fontFamily: theme.fonts.default,
           fontSize: 18,
-          fontWeight: 'bold',
+          fontWeight: "bold",
         },
       })}
     />
-    <ProfileStack.Screen 
-      name="FollowList" 
+    <ProfileStack.Screen
+      name="FollowList"
       component={FollowListScreen}
       options={({ route }) => ({
-        title: route.params.type === 'followers' ? 'Followers' : 'Following'
+        title: route.params.type === "followers" ? "Followers" : "Following",
       })}
     />
-    <ProfileStack.Screen 
-      name="OtherUserProfile" 
+    <ProfileStack.Screen
+      name="OtherUserProfile"
       component={OtherUserProfileScreen}
-      options={{ 
-        title: '',
-        headerBackTitle: 'Back'
+      options={{
+        title: "",
+        headerBackTitle: "Back",
       }}
     />
   </ProfileStack.Navigator>
@@ -449,10 +492,10 @@ const ProfileStackScreen = () => (
 
 const NotificationsStackScreen = () => (
   <NotificationsStack.Navigator screenOptions={screenOptions}>
-    <NotificationsStack.Screen 
-      name="NotificationsScreen" 
+    <NotificationsStack.Screen
+      name="NotificationsScreen"
       component={NotificationsScreen}
-      options={{ title: 'Notifications' }}
+      options={{ title: "Notifications" }}
     />
   </NotificationsStack.Navigator>
 );
@@ -486,11 +529,11 @@ const TabNavigator = () => {
   useEffect(() => {
     if (!user?.uid) return;
 
-    const notificationsRef = collection(db, 'notifications');
+    const notificationsRef = collection(db, "notifications");
     const q = query(
       notificationsRef,
-      where('toUserId', '==', user.uid),
-      where('read', '==', false)
+      where("toUserId", "==", user.uid),
+      where("read", "==", false)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -499,89 +542,97 @@ const TabNavigator = () => {
     });
 
     // Set up notification response handler with proper typing
-    const responseListener = Notifications.addNotificationResponseReceivedListener(
-      (response: NotificationResponse) => {
-        const data = response.notification.request.content.data;
-        
-        if (data.rankingId) {
-          navigation.navigate('RankingDetail', { rankingId: data.rankingId });
-        } else if (data.type === 'follow' && data.fromUserId) {
-          navigation.navigate('OtherUserProfile', { userId: data.fromUserId });
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener(
+        (response: NotificationResponse) => {
+          const data = response.notification.request.content.data;
+
+          if (data.rankingId) {
+            navigation.navigate("RankingDetail", { rankingId: data.rankingId });
+          } else if (data.type === "follow" && data.fromUserId) {
+            navigation.navigate("OtherUserProfile", {
+              userId: data.fromUserId,
+            });
+          }
         }
-      }
-    );
+      );
 
     return () => {
       unsubscribe();
       Notifications.removeNotificationSubscription(responseListener);
     };
   }, [user?.uid, navigation]);
-
+  const insets = useSafeAreaInsets();
   return (
-    <>
-    <AdBanner/>
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName: keyof typeof Ionicons.glyphMap = 'help-outline';
+    <SafeAreaView style={{ flex: 1, paddingTop: insets?.top }}>
+      <AdBanner />
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: keyof typeof Ionicons.glyphMap = "help-outline";
 
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-            return <Ionicons name={iconName} size={size} color={color} />;
-          } 
-          if (route.name === 'Search') {
-            iconName = focused ? 'search' : 'search-outline';
-            return <Ionicons name={iconName} size={size} color={color} />;
-          } 
-          if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-            return <Ionicons name={iconName} size={size} color={color} />;
-          }
-          if (route.name === 'Notifications') {
-            return (
-              <MaterialIcons 
-                name={hasUnreadNotifications ? "notifications-active" : "notifications-none"}
-                size={size} 
-                color={hasUnreadNotifications ? '#ff4444' : color}
-              />
-            );
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: theme.colors.text,
-        tabBarInactiveTintColor: theme.colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopWidth: 1,
-          borderTopColor: theme.colors.surface === '#FFFFFF' ? '#E5E5E5' : '#333333',
-          height: Platform.OS === 'ios' ? 88 : 60,
-          paddingBottom: Platform.OS === 'ios' ? 30 : 10,
-        },
-        tabBarLabelStyle: {
-          fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-          fontSize: 10,
-          marginTop: -4,
-        },
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeStackScreen} />
-      <Tab.Screen name="Search" component={SearchStackScreen} />
-      <Tab.Screen 
-        name="Notifications" 
-        component={NotificationsStackScreen}
-        listeners={{
-          tabPress: async () => {
-            if (user?.uid) {
-              await requestNotificationPermissions(user.uid);
+            if (route.name === "Home") {
+              iconName = focused ? "home" : "home-outline";
+              return <Ionicons name={iconName} size={size} color={color} />;
             }
+            if (route.name === "Search") {
+              iconName = focused ? "search" : "search-outline";
+              return <Ionicons name={iconName} size={size} color={color} />;
+            }
+            if (route.name === "Profile") {
+              iconName = focused ? "person" : "person-outline";
+              return <Ionicons name={iconName} size={size} color={color} />;
+            }
+            if (route.name === "Notifications") {
+              return (
+                <MaterialIcons
+                  name={
+                    hasUnreadNotifications
+                      ? "notifications-active"
+                      : "notifications-none"
+                  }
+                  size={size}
+                  color={hasUnreadNotifications ? "#ff4444" : color}
+                />
+              );
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
           },
-        }}
-      />
-      <Tab.Screen name="Profile" component={ProfileStackScreen} />
-    </Tab.Navigator>
-    </>
+          tabBarActiveTintColor: theme.colors.text,
+          tabBarInactiveTintColor: theme.colors.textSecondary,
+          tabBarStyle: {
+            backgroundColor: theme.colors.surface,
+            borderTopWidth: 1,
+            borderTopColor:
+              theme.colors.surface === "#FFFFFF" ? "#E5E5E5" : "#333333",
+            height: Platform.OS === "ios" ? 88 : 60,
+            paddingBottom: Platform.OS === "ios" ? 30 : 10,
+          },
+          tabBarLabelStyle: {
+            fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+            fontSize: 10,
+            marginTop: -4,
+          },
+          headerShown: false,
+        })}
+      >
+        <Tab.Screen name="Home" component={HomeStackScreen} />
+        <Tab.Screen name="Search" component={SearchStackScreen} />
+        <Tab.Screen
+          name="Notifications"
+          component={NotificationsStackScreen}
+          listeners={{
+            tabPress: async () => {
+              if (user?.uid) {
+                await requestNotificationPermissions(user.uid);
+              }
+            },
+          }}
+        />
+        <Tab.Screen name="Profile" component={ProfileStackScreen} />
+      </Tab.Navigator>
+    </SafeAreaView>
   );
 };
 
